@@ -15,32 +15,31 @@ class Widget(QMainWindow):
         
 # дизайн
     def generate(self):
-        if not self.ui.cb_numbers.isChecked() and not self.ui.cb_alphabet.isChecked() and not self.ui.cb_symbols.isChecked():
-            QMessageBox.information(self, 'Помилка', 'Виберіть хоча б одну категорію.', QMessageBox.Ok)
-            return
+        
         password_len, ok = QInputDialog.getInt(self, 'Ваш вибір', 'Вкажіть кількість символів:', 8, 1, 15, 1) 
         # імпортуємо з QtPy5 діалогове вікно з заданими заголовком і текстом, 8 -початкове значення, 1 - найменше, 15-найбільше, 1 - крок
         if not ok:
-            return #початкова кількість 8
+            return #не генерує
+        
         alphabet = 'abcdefghijklmnopqrstuvwxyzQWERTYUIOPASDFGHJKLZXCVBNM'
         numbers = '1234567890'
         symbols = "!@#$%^&*()-_=+|\\'\"/.<>,"
-        password = ""
 
+        categories = []
+        if self.ui.cb_alphabet.isChecked():
+            categories.extend(random.choices(alphabet, k=password_len))
+        if self.ui.cb_numbers.isChecked():
+            categories.extend(random.choices(numbers, k=password_len))
+        if self.ui.cb_symbols.isChecked():
+            categories.extend(random.choices(symbols, k=password_len))
 
-    
-        for x in range(password_len):
-            categories =[alphabet, numbers, symbols]
-            if categories:
+        if not categories:
+            QMessageBox.information(self, 'Помилка', 'Виберіть хоча б одну категорію.', QMessageBox.Ok)
+            return
         
-                choice = random.choice(categories)
-                if choice == numbers: 
-                    password += random.choice(numbers) 
-                elif choice == alphabet: 
-                    password += random.choice(alphabet) 
-                elif choice == symbols: 
-                    password += random.choice(symbols)
-        
+
+        password = ''.join(random.choice(categories) for _ in range(password_len))
+
         self.ui.resultLineEdit.setText(password)
         print(password)
         
@@ -51,4 +50,8 @@ ex = Widget()
 ex.show()
 app.exec_()
 # порожнє вікно
+
+
+
+
 
